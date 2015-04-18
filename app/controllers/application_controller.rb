@@ -1,7 +1,5 @@
-require "#{Rails.root}/lib/controller_helpers/controller_helpers"
-
 class ApplicationController < ActionController::API
-  include ControllerHelpers
+  include ApplicationHelper
 
   def not_found
     render_json 404
