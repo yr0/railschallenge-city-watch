@@ -5,12 +5,11 @@ class Responder < ActiveRecord::Base
   self.primary_key = :name
   self.inheritance_column = nil
 
-  TYPES = %w(fire medical police)
-  enum type: TYPES
+  enum type: %w(fire medical police)
 
   belongs_to :emergency, foreign_key: :emergency_code
 
   validates :type, presence: true
   validates :name, presence: true, uniqueness: true
-  validates :capacity, presence: true, length: { in: 1..5 }
+  validates :capacity, presence: true, inclusion: 1..5
 end

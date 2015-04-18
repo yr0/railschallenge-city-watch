@@ -11,6 +11,6 @@ class ApplicationController < ActionController::API
   end
 
   def not_found
-    render_error status: :not_found
+    render_error status: :not_found, body: 'page not found'
   end
 end

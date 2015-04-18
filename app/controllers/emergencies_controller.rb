@@ -9,7 +9,7 @@ class EmergenciesController < ApplicationController
   end
 
   def create
-    @emergency = Emergency.new(emergency_params)
+    @emergency = Emergency.new(create_emergency_params)
 
     if @emergency.save
       render :show, status: :created
@@ -21,8 +21,8 @@ class EmergenciesController < ApplicationController
   def update
     @emergency = Emergency.find(params[:id])
 
-    if @emergency.update(emergency_params)
-      head :no_content
+    if @emergency.update(update_emergency_params)
+      render :show, status: :ok
     else
       render_error body: @emergency.errors
     end
@@ -40,11 +40,13 @@ class EmergenciesController < ApplicationController
     @emergency = Emergency.find(params[:id])
   end
 
-  def emergency_params
-    pars = [:code, :fire_severity, :medical_severity,
-            :police_severity]
-    pars << [:resolved_at] if request.put?
+  def create_emergency_params
+    params.require(:emergency).permit [:code, :fire_severity, :medical_severity,
+                                       :police_severity]
+  end
 
-    params.require(:emergency).permit pars
+  def update_emergency_params
+    params.require(:emergency).permit [:fire_severity, :medical_severity,
+                                       :police_severity, :resolved_at]
   end
 end

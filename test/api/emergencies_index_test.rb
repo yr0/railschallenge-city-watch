@@ -33,9 +33,7 @@ class EmergenciesIndexTest < ActionDispatch::IntegrationTest
 
   def setup_resolved_emergencies
     post '/responders/', responder: { type: 'Fire', name: 'F-100', capacity: 1 }
-    p body
     patch '/responders/F-100', responder: { on_duty: true }
-    p body
 
     post '/emergencies/', emergency: { code: 'E-00000001', fire_severity: 1, police_severity: 0, medical_severity: 0 }
     post '/emergencies/', emergency: { code: 'E-00000002', fire_severity: 2, police_severity: 0, medical_severity: 0 }
