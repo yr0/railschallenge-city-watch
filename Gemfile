@@ -1,6 +1,7 @@
 source 'https://rubygems.org'
 
 gem 'rails', '4.2.1'
+gem 'rails-api'
 gem 'sqlite3', '1.3.10'
 
 gem 'jbuilder', '~> 2.0'
