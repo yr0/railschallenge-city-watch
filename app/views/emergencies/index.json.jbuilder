@@ -1,4 +1,6 @@
-json.array!(@emergencies) do |emergency|
-  json.extract! emergency, :code, :fire_severity, :medical_severity, :police_severity, :full_response, :resolved_at
-  json.url emergency_url(emergency, format: :json)
+json.emergencies do
+  json.array!(@emergencies) do |emergency|
+    json.extract! emergency, :code, :fire_severity, :medical_severity, :police_severity, :full_response, :resolved_at
+    json.url emergency_url(emergency, format: :json)
+  end
 end
