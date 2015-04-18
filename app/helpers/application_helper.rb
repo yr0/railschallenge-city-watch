@@ -1,16 +1,16 @@
 module ApplicationHelper
-  def render_json(status, body_hash = {})
-    status = status.to_s
-    if body_hash.empty? && error_responses.key?(status)
-      body_hash = error_responses[status]
-    end
+  def render_error(opts = {})
+    opts[:status] ||= :unprocessable_entity
+    status = error_responses[opts[:status].to_sym]
+    body = { message: opts[:body] || opts[:status] }.to_json
 
-    render json: body_hash.to_json, status: status
+    render json: body, status: status
   end
 
   def error_responses
     {
-      '404' => { message: 'page not found' }
+      not_found: 404,
+      unprocessable_entity: 422
     }
   end
 end

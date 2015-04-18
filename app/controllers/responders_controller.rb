@@ -49,11 +49,11 @@ class RespondersController < ApplicationController
 
   private
 
-    def set_responder
-      @responder = Responder.find(params[:id])
-    end
+  def set_responder
+    @responder = Responder.find(params[:id])
+  end
 
-    def responder_params
-      params.require(:responder).permit(:type, :name, :capacity, :on_duty, :emergency_id)
-    end
+  def responder_params
+    params.require(:responder).permit(:type, :name, :capacity, :on_duty, :emergency_id)
+  end
 end
