@@ -10,7 +10,7 @@ module ApplicationHelper
 
   def error_responses
     {
-        '404' => { message: 'page not found' }
+      '404' => { message: 'page not found' }
     }
   end
 end

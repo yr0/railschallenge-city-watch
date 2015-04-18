@@ -1,3 +1,5 @@
 Rails.application.routes.draw do
-  match '*all', to: 'application#not_found', via: [:get]
+  resources :responders, except: [:new, :edit]
+  resources :emergencies, except: [:new, :edit]
+  match '*all', to: 'application#not_found', via: [:get, :patch, :delete]
 end
