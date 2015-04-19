@@ -2,54 +2,55 @@ module DispatchCalculations
   class ResponderTypeCalculator
     def initialize(type, severity)
       @severity = severity
+      @response = true
+      @dispatched = []
+      @best_worst = []
+
       @capacities =    Responder
                        .method(type).call
                        .where(on_duty: true)
-                       .order(capacity: :desc)
+                       .order(capacity: :asc)
                        .pluck(:name, :capacity)
                        .to_h
-      @response = true
-      @dispatched = []
     end
 
     def calculate
       return [false, @capacities.keys] if @capacities.empty? || @severity > @capacities.values.reduce(&:+)
 
-      distribute_optimally
+      dispatch_from_combinations
 
       [@response, @dispatched]
     end
 
-    def distribute_optimally
-      reducing_severity = @severity
-
-      loop do
-        capacity = filter_capacities.values.find { |e| e <= reducing_severity }
-        if capacity
-          @dispatched << filter_capacities.invert[capacity]
-          reducing_severity -= capacity
-          break if reducing_severity == 0
-        else
-          find_bigger_capacity_or_fail
-          break
-        end
-      end
-    end
-
     private
 
-    def filter_capacities
-      # if we would need to scale, here we would select filtered capacities from database
-      @capacities.except(*@dispatched)
+    def dispatch_from_combinations
+      (1..@capacities.values.size).each do |n|
+        @capacities.values.combination(n).each do |value_combination|
+          # RuboCop frowns at empty return values
+          return true if check_combination value_combination
+        end
+      end
+
+      best_worst_or_fail
     end
 
-    def find_bigger_capacity_or_fail
-      bigger_capacity = filter_capacities.values.find { |e| e > @severity }
-      if bigger_capacity
-        @dispatched = [filter_capacities.invert[bigger_capacity]]
-      else
-        @response = false
+    def best_worst_or_fail
+      @dispatched = if @best_worst.empty?
+                      @response = false
+                      @capacities.keys
+                    else
+                      @capacities.invert.slice(*@best_worst).values
+                    end
+    end
+
+    def check_combination(value_combination)
+      if value_combination.reduce(:+) == @severity
+        @dispatched = @capacities.invert.slice(*value_combination).values
+        return true
       end
+      @best_worst = value_combination if @best_worst.empty? && value_combination.reduce(:+) > @severity
+      false
     end
   end
 end
