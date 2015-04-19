@@ -3,3 +3,5 @@ json.emergencies do
     json.partial!('emergency', emergency: emergency)
   end
 end
+
+json.set! :full_responses, Emergency.total_and_responded
