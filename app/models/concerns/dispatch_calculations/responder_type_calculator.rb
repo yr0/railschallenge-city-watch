@@ -17,14 +17,14 @@ module DispatchCalculations
     def calculate
       return [false, @capacities.keys] if @capacities.empty? || @severity > @capacities.values.reduce(&:+)
 
-      dispatch_from_combinations
+      dispatch_best_first
 
       [@response, @dispatched]
     end
 
     private
 
-    def dispatch_from_combinations
+    def dispatch_best_first
       (1..@capacities.values.size).each do |n|
         @capacities.values.combination(n).each do |value_combination|
           # RuboCop frowns at empty return values
