@@ -32,10 +32,12 @@ module DispatchCalculations
         end
       end
 
-      best_worst_or_fail
+      # dispatch units whose sum of capacities matches severity the closest
+      # if such units don't exist - dispatch all responders without full response
+      best_worst_or_all
     end
 
-    def best_worst_or_fail
+    def best_worst_or_all
       @dispatched = if @best_worst.empty?
                       @response = false
                       @capacities.keys
