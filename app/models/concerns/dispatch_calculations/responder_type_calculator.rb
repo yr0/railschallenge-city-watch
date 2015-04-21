@@ -15,7 +15,7 @@ module DispatchCalculations
     end
 
     def calculate
-      return [false, @capacities.keys] if @capacities.empty? || @severity > @capacities.values.reduce(&:+)
+      return [false, @capacities.keys] if @capacities.empty? || @severity > @capacities.values.reduce(:+)
 
       dispatch_best_first
 
@@ -45,11 +45,12 @@ module DispatchCalculations
     end
 
     def check_combination(value_combination)
-      if value_combination.reduce(:+) == @severity
+      values_sum = value_combination.reduce(:+)
+      if values_sum == @severity
         @dispatched = @capacities.invert.slice(*value_combination).values
         return true
       end
-      @best_worst = value_combination if @best_worst.empty? && value_combination.reduce(:+) > @severity
+      @best_worst = value_combination if @best_worst.empty? && values_sum > @severity
       false
     end
   end
