@@ -15,16 +15,16 @@ module DispatchCalculations
     end
 
     def calculate
-      return [false, @capacities.keys] if @capacities.empty? || @severity > @capacities.values.reduce(&:+)
+      return [false, @capacities.keys] if @capacities.empty? || @severity > @capacities.values.reduce(:+)
 
-      dispatch_from_combinations
+      dispatch_best_first
 
       [@response, @dispatched]
     end
 
     private
 
-    def dispatch_from_combinations
+    def dispatch_best_first
       (1..@capacities.values.size).each do |n|
         @capacities.values.combination(n).each do |value_combination|
           # RuboCop frowns at empty return values
@@ -32,10 +32,12 @@ module DispatchCalculations
         end
       end
 
-      best_worst_or_fail
+      # dispatch units whose sum of capacities matches severity the closest
+      # if such units don't exist - dispatch all responders without full response
+      best_worst_or_all
     end
 
-    def best_worst_or_fail
+    def best_worst_or_all
       @dispatched = if @best_worst.empty?
                       @response = false
                       @capacities.keys
@@ -45,11 +47,12 @@ module DispatchCalculations
     end
 
     def check_combination(value_combination)
-      if value_combination.reduce(:+) == @severity
+      values_sum = value_combination.reduce(:+)
+      if values_sum == @severity
         @dispatched = @capacities.invert.slice(*value_combination).values
         return true
       end
-      @best_worst = value_combination if @best_worst.empty? && value_combination.reduce(:+) > @severity
+      @best_worst = value_combination if @best_worst.empty? && values_sum > @severity
       false
     end
   end
