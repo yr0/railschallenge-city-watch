@@ -1,10 +1,6 @@
 class Responder < ActiveRecord::Base
   include CapacityReporting
 
-  extend FriendlyId
-  friendly_id :name, use: :slugged, slug_column: :name
-
-  self.primary_key = :name
   self.inheritance_column = nil
 
   enum type: %w(fire medical police)

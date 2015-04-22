@@ -10,7 +10,7 @@ module DispatchCalculations
                        .method(type).call
                        .where(on_duty: true)
                        .order(capacity: :asc)
-                       .pluck(:name, :capacity)
+                       .pluck(:id, :capacity)
                        .to_h
     end
 

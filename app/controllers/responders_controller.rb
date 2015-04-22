@@ -40,7 +40,7 @@ class RespondersController < ApplicationController
   private
 
   def set_responder
-    @responder = Responder.find(params[:id])
+    @responder = Responder.find_by!(name: params[:id])
   end
 
   def create_responder_params

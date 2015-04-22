@@ -19,8 +19,6 @@ class EmergenciesController < ApplicationController
   end
 
   def update
-    @emergency = Emergency.find(params[:id])
-
     if @emergency.update(update_emergency_params)
       render :show, status: :ok
     else
@@ -37,7 +35,7 @@ class EmergenciesController < ApplicationController
   private
 
   def set_emergency
-    @emergency = Emergency.find(params[:id])
+    @emergency = Emergency.find_by!(code: params[:id])
   end
 
   def create_emergency_params

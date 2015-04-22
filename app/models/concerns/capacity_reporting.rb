@@ -4,6 +4,7 @@ module CapacityReporting
   module ClassMethods
     def capacity_report
       result = {}
+      # get all types sums in one query, instead of 12
       capacity = all_sums
 
       # reformat types to capitalized type name

@@ -1,10 +1,10 @@
 class CreateResponders < ActiveRecord::Migration
   def change
-    create_table :responders, id: false do |t|
+    create_table :responders do |t|
       t.string :name, null: false
-      t.integer :responder_type
+      t.integer :type
       t.integer :capacity
-      t.boolean :on_duty
+      t.boolean :on_duty, default: false, null: false
       t.string :emergency_code, index: true, foreign_key: true
 
       t.timestamps null: false
