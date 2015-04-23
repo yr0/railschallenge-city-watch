@@ -4,18 +4,18 @@ module CapacityReporting
   module ClassMethods
     def capacity_report
       # get capitalized type names: ["Fire", "Medical", "Police"]
-      types_hash = types.keys.map(&:capitalize)
+      type_names = types.keys.map(&:capitalize)
 
-      capacity = all_sums
+      capacity_sums = fetch_all_sums
 
       # fetch type result from capacity, otherwise - fill with zeroes
-      types_hash.each_with_index.with_object({}) do |(type, idx), result|
-        result[type] = capacity[idx] || [0, 0, 0, 0]
+      type_names.each_with_index.with_object({}) do |(type, idx), result|
+        result[type] = capacity_sums[idx] || [0, 0, 0, 0]
       end
     end
 
     # get all types' sums in one query, instead of 12
-    def all_sums
+    def fetch_all_sums
       query = connection.execute <<SQL
 SELECT  type,
         SUM(capacity) AS total,
