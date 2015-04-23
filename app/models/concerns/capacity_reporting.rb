@@ -3,31 +3,18 @@ module CapacityReporting
 
   module ClassMethods
     def capacity_report
-      result = {}
-      # get all types sums in one query, instead of 12
+      # get capitalized type names: ["Fire", "Medical", "Police"]
+      types_hash = types.keys.map(&:capitalize)
+
       capacity = all_sums
 
-      # reformat types to capitalized type name
-      types_hash = types.map { |k, v| [k.to_s.capitalize, v] }.to_h
-
-      types_hash.each do |responder_type, types_index_in_table|
-        type_sums = nil
-        capacity.each do |type_capacity|
-          if type_capacity[0] == types_index_in_table
-            type_sums = type_capacity[1..-1]
-            break
-          end
-        end
-
-        # if no responder of specific type is found, fill with zeroes
-        type_sums ||= [0, 0, 0, 0]
-
-        result[responder_type] = type_sums
+      # fetch type result from capacity, otherwise - fill with zeroes
+      types_hash.each_with_index.with_object({}) do |(type, idx), result|
+        result[type] = capacity[idx] || [0, 0, 0, 0]
       end
-
-      result
     end
 
+    # get all types' sums in one query, instead of 12
     def all_sums
       query = connection.execute <<SQL
 SELECT  type,
@@ -39,8 +26,11 @@ FROM    responders
 GROUP BY type;
 SQL
 
-      # get only integer-indexed values from query
-      query.map! { |s| s.keep_if { |k| k.is_a? Integer }.values }
+      # get only integer-indexed values from query: [[0, 12, 7, 12, 7], [2, 1, 0, 1, 0]]
+      query.map! { |result_hash| result_hash.keep_if { |k| k.is_a? Integer }.values }
+
+      # transform the values by keys: {0 => [12, 7, 12, 7], 2 => [1, 0, 1, 0]}
+      query.map { |arr| [arr[0], arr[1..-1]] }.to_h
     end
   end
 end
