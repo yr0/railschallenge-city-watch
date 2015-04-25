@@ -1,36 +1,33 @@
+##
+# Logic pertaining the report counting of responders' capacity
 module CapacityReporting
   extend ActiveSupport::Concern
 
   module ClassMethods
+    # Generate capacity report on all types of responders.
+    # @example
+    #   Responder.capacity_report
+    #   # => { "Fire" => [5, 2, 5, 2], "Medical" => [7, 1, 3, 1], "Police" => [0, 0, 0, 0] }
+    # @return [Hash] all capacities by type
     def capacity_report
-      # get capitalized type names: ["Fire", "Medical", "Police"]
-      type_names = types.keys.map(&:capitalize)
-
-      capacity_sums = fetch_all_sums
-
-      # fetch type result from capacity, otherwise - fill with zeroes
-      type_names.each_with_index.with_object({}) do |(type, idx), result|
-        result[type] = capacity_sums[idx] || [0, 0, 0, 0]
+      types.keys.each.with_object({}) do |type, result|
+        result[type.capitalize] = count_capacities_by_type type
       end
     end
 
-    # get all types' sums in one query, instead of 12
-    def fetch_all_sums
-      query = connection.execute <<SQL
-SELECT  type,
-        SUM(capacity) AS total,
-        SUM(CASE WHEN emergency_code IS NULL THEN capacity ELSE 0 END) AS are_available,
-        SUM(CASE WHEN on_duty='t' THEN capacity ELSE 0 END) AS are_on_duty,
-        SUM(CASE WHEN emergency_code IS NULL AND on_duty='t' THEN capacity ELSE 0 END) AS are_on_duty_and_available
-FROM    responders
-GROUP BY type;
-SQL
-
-      # get only integer-indexed values from query: [[0, 12, 7, 12, 7], [2, 1, 0, 1, 0]]
-      query.map! { |result_hash| result_hash.keep_if { |k| k.is_a? Integer }.values }
-
-      # transform the values by keys: {0 => [12, 7, 12, 7], 2 => [1, 0, 1, 0]}
-      query.map { |arr| [arr[0], arr[1..-1]] }.to_h
+    # Count capacities sums for specific type. Method relies on scopes
+    # @param [String] type type of responder
+    # @example
+    #   Responder.count_capacities('fire')
+    #   # => [5, 2, 5, 2]
+    # @return [Array<Integer>] total capacity, capacity of those available, on duty, and both available and on duty
+    def count_capacities_by_type(type)
+      [
+        of_type(type).sum(:capacity),
+        of_type(type).available.sum(:capacity),
+        of_type(type).at_work.sum(:capacity),
+        of_type(type).available.at_work.sum(:capacity)
+      ]
     end
   end
 end

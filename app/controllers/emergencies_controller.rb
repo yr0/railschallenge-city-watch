@@ -5,9 +5,6 @@ class EmergenciesController < ApplicationController
     @emergencies = Emergency.all
   end
 
-  def show
-  end
-
   def create
     @emergency = Emergency.new(create_emergency_params)
 

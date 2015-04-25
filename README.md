@@ -1,3 +1,10 @@
+# Docs
+
+To generate docs, run `yardoc 'app/**/*.rb'` and then `yard server`. The YARD web interface will be available at
+port 8808.
+
+----
+
 # City Watch - RailsChallenge v1.0
 
 Welcome to the very first **rails**challenge!

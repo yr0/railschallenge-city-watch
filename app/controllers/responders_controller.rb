@@ -2,15 +2,12 @@ class RespondersController < ApplicationController
   before_action :set_responder, only: [:show, :update, :destroy]
 
   def index
-    if params[:show] && params[:show] == 'capacity'
+    if params[:show] == 'capacity'
       render json: { capacity: Responder.capacity_report }
       return
     else
       @responders = Responder.all
     end
-  end
-
-  def show
   end
 
   def create
