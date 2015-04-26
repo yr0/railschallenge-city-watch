@@ -11,7 +11,7 @@ class Emergency < ActiveRecord::Base
   # @return [Array<Integer>]:
   #   - [Integer] number of emergencies with full response
   #   - [Integer] total count of emergencies
-  def self.total_and_responded
+  def self.fully_responded_and_total
     [where(full_response: true).count, count]
   end
 end

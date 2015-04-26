@@ -4,4 +4,4 @@ json.emergencies do
   end
 end
 
-json.set! :full_responses, Emergency.total_and_responded
+json.set! :full_responses, Emergency.fully_responded_and_total

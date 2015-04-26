@@ -2,7 +2,7 @@ class EmergenciesController < ApplicationController
   before_action :set_emergency, only: [:show, :update, :destroy]
 
   def index
-    @emergencies = Emergency.all
+    @emergencies = Emergency.includes(:responders)
   end
 
   def create
