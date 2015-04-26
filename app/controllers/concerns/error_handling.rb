@@ -1,5 +1,5 @@
 ##
-# Encompasses all application logic concerning handling of errors with proper API responses
+# Encompasses all application logic concerning handling of 404 and 400 errors with proper API responses
 module ErrorHandling
   extend ActiveSupport::Concern
 
@@ -13,6 +13,10 @@ module ErrorHandling
   included do
     rescue_from ActionController::ParameterMissing, ActionController::UnpermittedParameters do |exception|
       render_error body: exception.message
+    end
+
+    rescue_from ActiveRecord::RecordInvalid do |exception|
+      render_error body: exception.record.errors.messages
     end
 
     rescue_from ActiveRecord::RecordNotFound do

@@ -6,26 +6,17 @@ class EmergenciesController < ApplicationController
   end
 
   def create
-    @emergency = Emergency.new(create_emergency_params)
-
-    if @emergency.save
-      render :show, status: :created
-    else
-      render_error body: @emergency.errors
-    end
+    @emergency = Emergency.create!(create_emergency_params)
+    render :show, status: :created
   end
 
   def update
-    if @emergency.update(update_emergency_params)
-      render :show, status: :ok
-    else
-      render_error body: @emergency.errors
-    end
+    @emergency.update!(update_emergency_params)
+    render :show, status: :ok
   end
 
   def destroy
     @emergency.destroy
-
     head :no_content
   end
 

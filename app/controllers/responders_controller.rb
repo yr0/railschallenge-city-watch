@@ -11,26 +11,17 @@ class RespondersController < ApplicationController
   end
 
   def create
-    @responder = Responder.new(create_responder_params)
-
-    if @responder.save
-      render :show, status: :created
-    else
-      render_error body: @responder.errors
-    end
+    @responder = Responder.create!(create_responder_params)
+    render :show, status: :created
   end
 
   def update
-    if @responder.update(update_responder_params)
-      render :show, status: :ok
-    else
-      render json: @responder.errors, status: :unprocessable_entity
-    end
+    @responder.update!(update_responder_params)
+    render :show, status: :ok
   end
 
   def destroy
     @responder.destroy
-
     head :no_content
   end
 
